@@ -13,21 +13,33 @@ defineProps<{
 </script>
 
 <template>
-    <div
-        class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0"
-    >
-        <div
-            class="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r"
-        >
-            <div class="absolute inset-0 bg-zinc-900" />
-            <Link
-                :href="home()"
-                class="relative z-20 flex items-center text-lg font-medium"
-            >
+    <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <div class="relative hidden h-full flex-col justify-between bg-zinc-900 p-10 text-white lg:flex">
+            <!-- Brand -->
+            <div class="relative z-20 flex items-center text-lg font-medium">
                 <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
                 {{ name }}
-            </Link>
+            </div>
+
+            <!-- Center content -->
+            <div class="relative z-20 space-y-4">
+                <h2 class="text-3xl font-semibold leading-tight">
+                    Staff Login
+                </h2>
+
+                <ul class="mt-4 space-y-2 text-sm text-zinc-300">
+                    <li>Fast checkout workflows</li>
+                    <li>Secure role-based access</li>
+                    <li>Designed for POS terminals</li>
+                </ul>
+            </div>
+
+            <!-- Footer -->
+            <div class="relative z-20 text-xs text-zinc-500">
+                © {{ new Date().getFullYear() }} {{ name }}
+            </div>
         </div>
+
         <div class="lg:p-8">
             <div
                 class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"

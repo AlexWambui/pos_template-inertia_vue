@@ -1,0 +1,29 @@
+.welcome_page {
+    /* *{outline: 2px solid red} */
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+    
+
+    .video-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+        display: block;
+    }
+
+    /* optional overlay */
+    .welcome_page::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7));
+        z-index: 1;
+    }
+}

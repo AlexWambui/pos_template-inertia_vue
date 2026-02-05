@@ -14,7 +14,11 @@ defineProps<{
 
 <template>
     <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
-        <div class="relative hidden h-full flex-col justify-between bg-zinc-900 p-10 text-white lg:flex">
+        <div class="welcome_page relative hidden h-full bg-zinc-900 p-10 text-white lg:flex">
+            <video autoplay muted loop playsinline preload="auto" disable-picture-in-picture class="video-bg">
+                <source src="/assets/videos/hero-section.mp4" type="video/mp4">
+            </video>
+            
             <!-- Brand -->
             <div class="relative z-20 flex items-center text-lg font-medium">
                 <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
@@ -24,7 +28,7 @@ defineProps<{
             <!-- Center content -->
             <div class="relative z-20 space-y-4">
                 <h2 class="text-3xl font-semibold leading-tight">
-                    Staff Login
+                    Login
                 </h2>
 
                 <ul class="mt-4 space-y-2 text-sm text-zinc-300">

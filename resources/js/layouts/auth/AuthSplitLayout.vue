@@ -20,7 +20,7 @@ defineProps<{
             </video>
             
             <!-- Brand -->
-            <div class="relative z-20 flex items-center text-lg font-medium">
+            <div class="relative z-20 flex items-center gap-2 text-xl font-bold leading-tight">
                 <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
                 {{ name }}
             </div>

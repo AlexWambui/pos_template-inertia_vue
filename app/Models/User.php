@@ -146,6 +146,11 @@ class User extends Authenticatable
         return $this->hasOne(SupplierProfile::class);
     }
 
+    public function shifts()
+    {
+        return $this->hasMany(\App\Models\Users\Shift::class);
+    }
+
     // Helper Methods
     public function isActive(): bool
     {
@@ -222,5 +227,15 @@ class User extends Authenticatable
         $role_value = is_numeric($role) ? (int)$role : $role;
         
         return $query->where('role', $role);
+    }
+
+    public function openShift()
+    {
+        return $this->hasOne(\App\Models\Users\Shift::class)->whereNull('closed_at');
+    }
+
+    public function hasOpenShift(): bool
+    {
+        return $this->openShift()->exists();
     }
 }

@@ -1,3 +1,15 @@
+@import 'tailwindcss';
+
+form {
+    .inputs_group {
+        @apply mb-4;
+
+        label {
+            @apply my-2;
+        }
+    }
+}
+
 .welcome_page {
     /* *{outline: 2px solid red} */
 
@@ -26,4 +38,8 @@
         background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
         z-index: 1;
     }
+}
+
+button {
+    cursor: pointer;
 }

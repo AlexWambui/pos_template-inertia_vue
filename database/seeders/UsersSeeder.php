@@ -19,22 +19,22 @@ class UsersSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'email' => 'superadmin@pos.com',
-                'role' => 'super_admin',
+                'role' => 0,
             ],
             [
                 'name' => 'Admin User',
                 'email' => 'admin@pos.com',
-                'role' => 'admin',
+                'role' => 1,
             ],
             [
                 'name' => 'Cashier User',
                 'email' => 'cashier@pos.com',
-                'role' => 'cashier',
+                'role' => 2,
             ],
             [
                 'name' => 'Supplier User',
                 'email' => 'supplier@pos.com',
-                'role' => 'supplier',
+                'role' => 3,
             ],
         ];
 
@@ -48,19 +48,12 @@ class UsersSeeder extends Seeder
                     'password' => $password,
                     'status' => 1,
                     'email_verified_at' => now(),
+                    'role' => $data['role'],
                 ]
             );
 
-            // 2️⃣ Assign role
-            $roleId = DB::table('roles')->where('name', $data['role'])->value('id');
-            if ($roleId) {
-                DB::table('role_user')->updateOrInsert(
-                    ['user_id' => $user->id, 'role_id' => $roleId]
-                );
-            }
-
             // 3️⃣ Optional: create staff or supplier profile
-            if (in_array($data['role'], ['super_admin', 'admin', 'cashier'])) {
+            if (in_array($data['role'], [0, 1, 2])) {
                 DB::table('staff_profiles')->updateOrInsert(
                     ['user_id' => $user->id],
                     [
@@ -72,7 +65,7 @@ class UsersSeeder extends Seeder
                         'updated_at' => now(),
                     ]
                 );
-            } elseif ($data['role'] === 'supplier') {
+            } elseif ($data['role'] === 2) {
                 DB::table('supplier_profiles')->updateOrInsert(
                     ['user_id' => $user->id],
                     [

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
+use App\Policies\Users\UserPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        // Register Policies
+        Gate::policy(User::class, UserPolicy::class);
     }
 
     protected function configureDefaults(): void

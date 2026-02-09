@@ -8,8 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Enums\UserStatuses;
+use App\Enums\UserRoles;
 use Illuminate\Support\Str;
-use App\Models\Users\Role;
 use App\Models\Users\StaffProfile;
 use App\Models\Users\CustomerProfile;
 use App\Models\Users\SupplierProfile;
@@ -51,8 +51,19 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
             'last_login_at' => 'datetime',
             'status' => UserStatuses::class,
+            'role' => UserRoles::class,
         ];
     }
+
+    protected $appends = [
+        'role_label',
+    ];
+
+    protected $with = [
+        'staffProfile',
+        'customerProfile',
+        'supplierProfile',
+    ];
 
     protected static function booted()
     {
@@ -63,14 +74,61 @@ class User extends Authenticatable
         });
     }
 
-    public function roles()
+    public function hasRole(string $role_name): bool
     {
-        return $this->belongsToMany(Role::class);
+        // Convert string role name to enum value
+        foreach (UserRoles::cases() as $role) {
+            if (strtolower($role->name) === strtolower($role_name)) {
+                return $this->role->value === $role->value;
+            }
+        }
+        return false;
+    }
+    
+    public function hasAnyRole(array $role_names): bool
+    {
+        foreach ($role_names as $role_name) {
+            if ($this->hasRole($role_name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public function hasRole(string $role): bool
+    public function isSuperAdmin(): bool
     {
-        return $this->roles()->where('name', $role)->exists();
+        return $this->role === UserRoles::SUPER_ADMIN;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRoles::ADMIN;
+    }
+    
+    public function isCashier(): bool
+    {
+        return $this->role === UserRoles::CASHIER;
+    }
+    
+    public function isSupplier(): bool
+    {
+        return $this->role === UserRoles::SUPPLIER;
+    }
+    
+    public function isCustomer(): bool
+    {
+        return $this->role === UserRoles::CUSTOMER;
+    }
+    
+    // Check if user is staff (either admin or cashier)
+    public function isStaff(): bool
+    {
+        return in_array($this->role, [
+            UserRoles::SUPER_ADMIN,
+            UserRoles::ADMIN,
+            UserRoles::CASHIER
+        ]);
     }
 
     public function staffProfile()
@@ -92,5 +150,77 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === 1;
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return $this->role->label();
+    }
+
+    // Scope for specific roles
+    public function scopeWhereRole($query, UserRoles $role)
+    {
+        return $query->where('role', $role->value);
+    }
+    
+    public function scopeStaff($query)
+    {
+        return $query->whereIn('role', [
+            UserRoles::SUPER_ADMIN->value,
+            UserRoles::ADMIN->value,
+            UserRoles::CASHIER->value
+        ]);
+    }
+    
+    public function scopeCustomers($query)
+    {
+        return $query->whereRole(UserRoles::CUSTOMER);
+    }
+    
+    public function scopeSuppliers($query)
+    {
+        return $query->whereRole(UserRoles::SUPPLIER);
+    }
+
+    public function scopeOrderByRolePriority($query)
+    {
+        return $query->orderByRaw(
+            "CASE
+                WHEN role = ? THEN 1
+                WHEN role = ? THEN 2
+                WHEN role = ? THEN 3
+                WHEN role = ? THEN 4
+                WHEN role = ? THEN 5
+                ELSE 6
+            END ASC",
+            [
+                UserRoles::SUPER_ADMIN->value,
+                UserRoles::ADMIN->value,
+                UserRoles::CASHIER->value,
+                UserRoles::SUPPLIER->value,
+                UserRoles::CUSTOMER->value,
+            ]
+        )->orderBy('name');
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) return $query;
+        
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeFilterByRole($query, $role)
+    {
+        if ($role === null || $role === '') {
+            return $query;
+        }
+
+        $role_value = is_numeric($role) ? (int)$role : $role;
+        
+        return $query->where('role', $role);
     }
 }

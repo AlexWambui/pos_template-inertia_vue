@@ -2,13 +2,13 @@
 
 namespace App\Enums;
 
-enum UserRoles: string
+enum UserRoles: int
 {
-    case SUPER_ADMIN = 'super_admin';
-    case ADMIN = 'admin';
-    case CASHIER = 'cashier';
-    case SUPPLIER = 'supplier';
-    case CUSTOMER = 'customer';
+    case SUPER_ADMIN = 0;
+    case ADMIN = 1;
+    case CASHIER = 2;
+    case SUPPLIER = 3;
+    case CUSTOMER = 4;
 
     public function label(): string
     {

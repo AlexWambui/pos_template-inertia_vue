@@ -38,6 +38,7 @@ import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import users from '@/routes/users';
+import products from '@/routes/products';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -63,6 +64,11 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Users',
         href: users.index().url,
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Products',
+        href: products.index().url,
         icon: LayoutGrid,
     },
 ];

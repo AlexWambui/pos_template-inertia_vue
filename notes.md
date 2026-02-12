@@ -430,11 +430,14 @@ Schema::create('product_categories', function (Blueprint $table) {
 Schema::create('products', function (Blueprint $table) {
     $table->id();
 
-    $table->string('sku')->unique();
     $table->string('name');
-    $table->decimal('base_price', 12, 2);
-
+    $table->string('sku')->unique()->nullable();
+    $table->decimal('buying_price', 12, 2)->nullable(); // For profit calculation
+    $table->decimal('selling_price', 12, 2);
+    $table->string('barcode')->unique()->nullable();
     $table->boolean('is_active')->default(true);
+    $table->integer('current_stock')->default(0);
+    $table->string('unit_of_measurement')->nullable(); // For receipt display
 
     $table->timestamps();
 });
@@ -449,15 +452,26 @@ Schema::create('category_product', function (Blueprint $table) {
     $table->unique(['category_id', 'product_id']);
 });
 
+Schema::create('product_images', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->boolean('is_primary')->default(false);
+    $table->integer('sort_order')->default(0);
+
+    $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+
+    $table->timestamps();
+});
+
 Schema::create('inventory_movements', function (Blueprint $table) {
     $table->id();
 
-    $table->string('type', 20); // sale, restock, adjustment
-    $table->integer('quantity_change');
+    $table->unsignedTinyInteger('type'); // sale, restock, adjustment, return, waste
+    $table->integer('quantity_change'); // Positive for in, negative for out
+    $table->text('reason')->nullable(); // "stock take", "damaged"
+    $table->string('reference_type')->nullable(); // "App\Models\|Sale"
 
-    $table->string('reference_type')->nullable();
-    $table->unsignedBigInteger('reference_id')->nullable();
-
+    $table->foreignId('reference_id')->nullable(); // Links to purchese_order_id, sale_id
     $table->foreignId('product_id')->constrained()->cascadeOnDelete();
     $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
     $table->foreignId('shift_id')->nullable()->constrained()->nullOnDelete();

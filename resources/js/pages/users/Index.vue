@@ -124,7 +124,7 @@ const clearFilters = () => {
             <!-- Header with Stats and Actions -->
             <div class="header mb-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-2xl font-bold">Users</h1>
+                    <h1 class="text-xl font-bold">Users</h1>
 
                     <div class="search-filter-bar">
                         <div class="flex flex-col md:flex-row md:items-center gap-4">

@@ -28,6 +28,11 @@ Route::middleware(['auth', 'role:admin,super_admin'])->group(function () {
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('branches', [BranchesController::class, 'index'])->name('branches.index');
+    Route::get('branches/create', [BranchesController::class, 'create'])->name('branches.create');
+    Route::post('branches', [BranchesController::class, 'store'])->name('branches.store');
+    Route::get('branches/{branch}/edit', [BranchesController::class, 'edit'])->name('branches.edit');
+    Route::put('branches/{branch}', [BranchesController::class, 'update'])->name('branches.update');
+    Route::delete('branches/{branch}', [BranchesController::class, 'destroy'])->name('branches.destroy');
 
     Route::get('product-categories', [ProductCategoryController::class, 'index'])->name('product-categories.index');
     Route::get('product-categories/create', [ProductCategoryController::class, 'create'])->name('product-categories.create');

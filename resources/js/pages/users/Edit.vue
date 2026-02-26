@@ -195,194 +195,193 @@ const roleChangeWarning = computed(() => {
   <Head title="Edit User" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="p-4">
-      <div class="header">
-        <form @submit.prevent="handleSubmit" class="w-8/12 space-y-6">
-          <!-- Role Change Warning -->
-          <div v-if="roleChangeWarning" class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm text-yellow-700">
-                  {{ roleChangeWarning }}
-                </p>
-              </div>
+    <div class="user_edit_form">
+      <form @submit.prevent="handleSubmit" class="w-8/12 space-y-6">
+        <!-- Role Change Warning -->
+        <div v-if="roleChangeWarning" class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                {{ roleChangeWarning }}
+              </p>
             </div>
           </div>
+        </div>
 
-          <!-- Basic Information -->
-          <div class="space-y-4">
-            <h2 class="text-lg font-semibold">Basic Information</h2>
+        <!-- Basic Information -->
+        <div class="space-y-4">
+          <h2 class="text-lg font-semibold">Basic Information</h2>
+          
+          <div class="inputs_group">
+            <Label for="name">Name</Label>
+            <Input v-model="form.name" type="text" placeholder="Name of the user" />
+            <div class="text-sm text-red-600" v-if="form.errors.name">{{ form.errors.name }}</div>
+          </div>
+
+          <div class="inputs_group">
+            <Label for="email">Email</Label>
+            <Input v-model="form.email" type="email" placeholder="Email Address" />
+            <div class="text-sm text-red-600" v-if="form.errors.email">{{ form.errors.email }}</div>
+          </div>
+
+          <div class="inputs_group">
+            <Label for="password">Password (Leave blank to keep current)</Label>
+            <Input v-model="form.password" type="password" placeholder="Enter new password" />
+            <div class="text-sm text-gray-500">Only fill if you want to change the password</div>
+            <div class="text-sm text-red-600" v-if="form.errors.password">{{ form.errors.password }}</div>
+          </div>
+
+          <div class="inputs_group">
+            <Label for="role">Role</Label>
+            <Select v-model="form.role">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select User's Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Roles</SelectLabel>
+                  <SelectItem 
+                    v-for="role in role_options" 
+                    :key="role.value" 
+                    :value="role.value.toString()"
+                  >
+                    {{ role.label }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <div class="text-sm text-red-600" v-if="form.errors.role">{{ form.errors.role }}</div>
+          </div>
+        </div>
+
+        <!-- Role-specific fields -->
+        <div v-if="showRoleSpecificFields" class="space-y-6">
+          <div v-if="form.role === '2'"> <!-- CASHIER -->
+            <h3 class="text-md font-medium mb-4">Cashier Details</h3>
             
             <div class="inputs_group">
-              <Label for="name">Name</Label>
-              <Input v-model="form.name" type="text" placeholder="Name of the user" />
-              <div class="text-sm text-red-600" v-if="form.errors.name">{{ form.errors.name }}</div>
-            </div>
-
-            <div class="inputs_group">
-              <Label for="email">Email</Label>
-              <Input v-model="form.email" type="email" placeholder="Email Address" />
-              <div class="text-sm text-red-600" v-if="form.errors.email">{{ form.errors.email }}</div>
-            </div>
-
-            <div class="inputs_group">
-              <Label for="password">Password (Leave blank to keep current)</Label>
-              <Input v-model="form.password" type="password" placeholder="Enter new password" />
-              <div class="text-sm text-gray-500">Only fill if you want to change the password</div>
-              <div class="text-sm text-red-600" v-if="form.errors.password">{{ form.errors.password }}</div>
-            </div>
-
-            <div class="inputs_group">
-              <Label for="role">Role</Label>
-              <Select v-model="form.role">
+              <Label for="branch_id">Branch</Label>
+              <Select v-model="form.branch_id">
                 <SelectTrigger class="w-full">
-                  <SelectValue placeholder="Select User's Role" />
+                  <SelectValue placeholder="Select Branch" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Roles</SelectLabel>
+                    <SelectLabel>Branches</SelectLabel>
                     <SelectItem 
-                      v-for="role in role_options" 
-                      :key="role.value" 
-                      :value="role.value.toString()"
+                      v-for="branch in branches" 
+                      :key="branch.id" 
+                      :value="branch.id.toString()"
                     >
-                      {{ role.label }}
+                      {{ branch.name }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <div class="text-sm text-red-600" v-if="form.errors.role">{{ form.errors.role }}</div>
+              <div class="text-sm text-red-600" v-if="form.errors.branch_id">{{ form.errors.branch_id }}</div>
+            </div>
+
+            <div class="inputs_group">
+              <Label for="position">Position</Label>
+              <Select v-model="form.position">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="Select Position" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Positions</SelectLabel>
+                    <SelectItem value="Cashier">Cashier</SelectItem>
+                    <SelectItem value="Manager">Manager</SelectItem>
+                    <SelectItem value="Team Leader">Team Leader</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <div class="text-sm text-red-600" v-if="form.errors.position">{{ form.errors.position }}</div>
             </div>
           </div>
 
-          <!-- Role-specific fields -->
-          <div v-if="showRoleSpecificFields" class="space-y-6">
-            <div v-if="form.role === '2'"> <!-- CASHIER -->
-              <h3 class="text-md font-medium mb-4">Cashier Details</h3>
-              
-              <div class="inputs_group">
-                <Label for="branch_id">Branch</Label>
-                <Select v-model="form.branch_id">
-                  <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select Branch" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Branches</SelectLabel>
-                      <SelectItem 
-                        v-for="branch in branches" 
-                        :key="branch.id" 
-                        :value="branch.id.toString()"
-                      >
-                        {{ branch.name }}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <div class="text-sm text-red-600" v-if="form.errors.branch_id">{{ form.errors.branch_id }}</div>
-              </div>
-
-              <div class="inputs_group">
-                <Label for="position">Position</Label>
-                <Select v-model="form.position">
-                  <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select Position" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Positions</SelectLabel>
-                      <SelectItem value="Cashier">Cashier</SelectItem>
-                      <SelectItem value="Manager">Manager</SelectItem>
-                      <SelectItem value="Team Leader">Team Leader</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <div class="text-sm text-red-600" v-if="form.errors.position">{{ form.errors.position }}</div>
-              </div>
+          <div v-else-if="form.role === '4'"> <!-- CUSTOMER -->
+            <h3 class="text-md font-medium mb-4">Customer Details</h3>
+            
+            <div class="inputs_group">
+              <Label for="credit_limit">Credit Limit</Label>
+              <Input 
+                :model-value="form.credit_limit"
+                @update:model-value="(value: string | number) => form.credit_limit = String(value)"
+                type="number" 
+                placeholder="0.00" 
+                step="0.01"
+                min="0"
+              />
+              <div class="text-sm text-red-600" v-if="form.errors.credit_limit">{{ form.errors.credit_limit }}</div>
             </div>
 
-            <div v-else-if="form.role === '4'"> <!-- CUSTOMER -->
-              <h3 class="text-md font-medium mb-4">Customer Details</h3>
-              
-              <div class="inputs_group">
-                <Label for="credit_limit">Credit Limit</Label>
-                <Input 
-                  :model-value="form.credit_limit"
-                  @update:model-value="(value: string | number) => form.credit_limit = String(value)"
-                  type="number" 
-                  placeholder="0.00" 
-                  step="0.01"
-                  min="0"
-                />
-                <div class="text-sm text-red-600" v-if="form.errors.credit_limit">{{ form.errors.credit_limit }}</div>
-              </div>
-
-              <div class="inputs_group">
-                <Label for="loyalty_points">Loyalty Points</Label>
-                <Input 
-                  :model-value="form.loyalty_points"
-                  @update:model-value="(value: string | number) => form.loyalty_points = String(value)"
-                  type="number" 
-                  placeholder="0" 
-                  min="0"
-                />
-                <div class="text-sm text-red-600" v-if="form.errors.loyalty_points">{{ form.errors.loyalty_points }}</div>
-              </div>
-            </div>
-
-            <div v-else-if="form.role === '3'"> <!-- SUPPLIER -->
-              <h3 class="text-md font-medium mb-4">Supplier Details</h3>
-              
-              <div class="inputs_group">
-                <Label for="company_name">Company Name</Label>
-                <Input v-model="form.company_name" type="text" placeholder="Company Name" />
-                <div class="text-sm text-red-600" v-if="form.errors.company_name">{{ form.errors.company_name }}</div>
-              </div>
-
-              <div class="inputs_group">
-                <Label for="payment_terms">Payment Terms</Label>
-                <Select v-model="form.payment_terms">
-                  <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select Payment Terms" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Payment Terms</SelectLabel>
-                      <SelectItem 
-                        v-for="term in paymentTermsOptions" 
-                        :key="term.value" 
-                        :value="term.value"
-                      >
-                        {{ term.label }}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <div class="text-sm text-red-600" v-if="form.errors.payment_terms">{{ form.errors.payment_terms }}</div>
-              </div>
+            <div class="inputs_group">
+              <Label for="loyalty_points">Loyalty Points</Label>
+              <Input 
+                :model-value="form.loyalty_points"
+                @update:model-value="(value: string | number) => form.loyalty_points = String(value)"
+                type="number" 
+                placeholder="0" 
+                min="0"
+              />
+              <div class="text-sm text-red-600" v-if="form.errors.loyalty_points">{{ form.errors.loyalty_points }}</div>
             </div>
           </div>
 
-          <div class="flex space-x-4">
-            <Button type="submit" :disabled="form.processing">
-              {{ form.processing ? 'Updating...' : 'Update User' }}
-            </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
-              :href="users.index().url"
-              as="a"
-            >
-              Cancel
-            </Button>
+          <div v-else-if="form.role === '3'"> <!-- SUPPLIER -->
+            <h3 class="text-md font-medium mb-4">Supplier Details</h3>
+            
+            <div class="inputs_group">
+              <Label for="company_name">Company Name</Label>
+              <Input v-model="form.company_name" type="text" placeholder="Company Name" />
+              <div class="text-sm text-red-600" v-if="form.errors.company_name">{{ form.errors.company_name }}</div>
+            </div>
+
+            <div class="inputs_group">
+              <Label for="payment_terms">Payment Terms</Label>
+              <Select v-model="form.payment_terms">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="Select Payment Terms" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Payment Terms</SelectLabel>
+                    <SelectItem 
+                      v-for="term in paymentTermsOptions" 
+                      :key="term.value" 
+                      :value="term.value"
+                    >
+                      {{ term.label }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <div class="text-sm text-red-600" v-if="form.errors.payment_terms">{{ form.errors.payment_terms }}</div>
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <div class="flex space-x-4">
+          <Button type="submit" :disabled="form.processing">
+            {{ form.processing ? 'Updating...' : 'Update User' }}
+          </Button>
+          
+          <Button 
+            type="button" 
+            variant="outline" 
+            :href="users.index().url"
+            as="a"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
     </div>
   </AppLayout>
 </template>

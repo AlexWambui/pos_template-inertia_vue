@@ -65,7 +65,7 @@ const handleParentChange = (value: string) => {
     <Head :title="`Edit ${category.name}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-4 max-w-2xl mx-auto">
+        <div class="max-w-2xl mx-auto">
             <div class="bg-white rounded-lg border shadow-sm p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-lg font-semibold">Edit Category: {{ category.name }}</h2>

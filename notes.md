@@ -445,11 +445,13 @@ Schema::create('products', function (Blueprint $table) {
 Schema::create('category_product', function (Blueprint $table) {
     $table->id();
 
-    $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('product_category_id')->constrained()->cascadeOnDelete();
 
     $table->foreignId('product_id')->constrained()->cascadeOnDelete();
 
-    $table->unique(['category_id', 'product_id']);
+    $table->unique(['product_category_id', 'product_id']);
+
+    $table->timestamps();
 });
 
 Schema::create('product_images', function (Blueprint $table) {
@@ -573,4 +575,74 @@ class User extends Authenticatable
     }
 }
 
+```
+
+
+Original page header
+```js
+<!-- Header with Stats and Actions -->
+<div class="header mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-xl font-bold">Users</h1>
+
+        <div class="search-filter-bar">
+            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                <!-- Search Input -->
+                <div class="flex-1">
+                    <Input
+                        v-model="search"
+                        type="text"
+                        placeholder="Search users by name or email..."
+                        class="w-full"
+                    />
+                </div>
+
+                <!-- Active Filters Display -->
+                <div class="flex flex-wrap gap-2 items-center">
+                    <span v-if="search || selectedRole" class="text-sm text-gray-600">
+                        Filters:
+                    </span>
+                    <span v-if="search" 
+                        class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full flex items-center gap-1">
+                        Search: "{{ search }}"
+                        <button @click="search = ''" class="text-blue-600 hover:text-blue-800">×</button>
+                    </span>
+                    <span v-if="selectedRole" 
+                        class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full flex items-center gap-1">
+                        Role: {{ role_counts[selectedRole]?.label || selectedRole }}
+                        <button @click="selectedRole = ''" class="text-green-600 hover:text-green-800">×</button>
+                    </span>
+                    <!-- <Button v-if="search || selectedRole" 
+                            @click="clearFilters" 
+                            variant="outline" 
+                            size="sm">
+                        Clear All
+                    </Button> -->
+                </div>
+            </div>
+        </div>
+
+        <Link :href="users.create().url">
+            <Button>Create User</Button>
+        </Link>
+    </div>
+
+    <!-- Role Statistics -->
+    <div class="role-stats mb-4 py-2 px-4 bg-gray-50 rounded-lg">
+        <div class="flex flex-wrap gap-8 text-sm">
+            <div class="stat-item cursor-pointer" 
+                    @click="filterByRole('')"
+                    :class="{ 'font-bold text-blue-600': !selectedRole }">
+                <span class="font-semibold">{{ totalUsers }}</span> Users
+            </div>
+            <div v-for="(roleCount, roleValue) in role_counts" 
+                    :key="roleValue"
+                    class="stat-item cursor-pointer"
+                    @click="filterByRole(roleValue)"
+                    :class="{ 'font-bold text-blue-600': selectedRole === roleValue }">
+                <span class="font-semibold">{{ roleCount.count }}</span> {{ roleCount.label }}{{ roleCount.count !== 1 ? 's' : '' }}
+            </div>
+        </div>
+    </div>
+</div>
 ```

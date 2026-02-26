@@ -2,11 +2,13 @@
 
 namespace App\Models\Products;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class CategoryProduct extends Model
+class CategoryProduct extends Pivot
 {
     protected $table = 'category_product';
+
+    protected $guarded = [];
 
     public $timestamps = true;
 

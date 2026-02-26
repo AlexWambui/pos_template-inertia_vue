@@ -49,7 +49,7 @@ const handleSubmit = () => {
     <Head title="Create Product Category" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-4 max-w-2xl mx-auto">
+        <div class="max-w-2xl mx-auto">
             <div class="bg-white rounded-lg border shadow-sm p-6">
                 <h2 class="text-lg font-semibold mb-6">Create New Category</h2>
 
@@ -128,7 +128,6 @@ const handleSubmit = () => {
                         </Label>
                     </div>
 
-                    <!-- Form Actions -->
                     <div class="flex justify-end space-x-3 pt-4 border-t">
                         <Link :href="productCategories.index().url">
                             <Button type="button" variant="outline">

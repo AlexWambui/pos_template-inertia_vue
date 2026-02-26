@@ -13,11 +13,11 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('categories')
+        $products = Product::with('categories:id,name')
             ->when(request('search'), function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('sku', 'like', "{%$search%}")
-                    ->orWhere('barcode', 'like', "{%$search%}");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%");
             })
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -40,16 +40,19 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
-        $product = Product::create([
-            'name' => $request->name,
-            'sku' => $request->sku,
-            'barcode' => $request->barcode,
-            'buying_price' => $request->buying_price,
-            'selling_price' => $request->selling_price,
-            'unit_of_measurement' => $request->unit_of_measurement,
-            'description' => $request->description,
-            'is_active' => $request->boolean('is_active'),
+        $data = $request->only([
+            'name',
+            'sku',
+            'barcode',
+            'buying_price',
+            'selling_price',
+            'unit_of_measurement',
+            'current_stock',
         ]);
+
+        $data['is_active'] = $request->boolean('is_active', false);
+
+        $product = Product::create($data);        
 
         if ($request->has('categories')) {
             $product->categories()->sync($request->categories);
@@ -71,17 +74,19 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product)
     {
-        $product->update([
-            'name' => $request->name,
-            'sku' => $request->sku,
-            'barcode' => $request->barcode,
-            'buying_price' => $request->buying_price,
-            'selling_price' => $request->selling_price,
-            'unit_of_measurement' => $request->unit_of_measurement,
-            'current_stock' => $request->current_stock ?? $product->current_stock,
-            'description' => $request->description,
-            'is_active' => $request->boolean('is_active'),
+        $data = $request->only([
+            'name',
+            'sku',
+            'barcode',
+            'buying_price',
+            'selling_price',
+            'unit_of_measurement',
+            'current_stock',
         ]);
+
+        $data['is_active'] = $request->boolean('is_active', false);
+
+        $product->update($data);
 
         if ($request->has('categories')) {
             $product->categories()->sync($request->categories);
@@ -99,5 +104,14 @@ class ProductController extends Controller
         return redirect()->route('products.index')
             ->with('message', 'Product deleted successfully.')
             ->with('type', 'success');
+    }
+
+    public function toggleStatus( Product $product)
+    {
+        $product->update([
+            'is_active' => !$product->is_active,
+        ]);
+
+        return redirect()->back()->with(['message' => 'Product status updated successfully', 'type' => 'success']);
     }
 }

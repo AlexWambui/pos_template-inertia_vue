@@ -42,8 +42,7 @@ class ProductRequest extends FormRequest
             'selling_price' => ['required', 'numeric', 'min:0', 'max:9999999.99'],
             'unit_of_measurement' => ['nullable', 'string', 'max:20'],
             'current_stock' => ['nullable', 'integer', 'min:0'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'is_active' => ['boolean'],
+            'is_active' => 'sometimes|boolean',
             'categories' => ['nullable', 'array'],
             'categories.*' => ['exists:product_categories,id'],
         ];

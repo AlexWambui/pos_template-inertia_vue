@@ -22,7 +22,9 @@ class Product extends Model
     // Relationships
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(ProductCategory::class)->using(CategoryProduct::class)->withTimestamps();
+        return $this->belongsToMany(ProductCategory::class, 'category_product', 'product_id', 'product_category_id')
+        ->using(CategoryProduct::class)
+        ->withTimestamps();
     }
 
     public function images(): HasMany

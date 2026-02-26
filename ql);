@@ -1,0 +1,6 @@
+[90m= [39m[
+    {#5541
+      +"[1msql[22m": "[32mCREATE TABLE "products" ("id" integer primary key autoincrement not null, "sku" varchar, "name" varchar not null, "buying_price" numeric, "selling_price" numeric not null, "barcode" varchar, "is_active" tinyint(1) not null default '1', "current_stock" integer not null default '0', "unit_of_measurement" varchar, "created_at" datetime, "updated_at" datetime)[39m",
+    },
+  ]
+

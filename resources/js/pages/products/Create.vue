@@ -70,14 +70,6 @@ const handleSubmit = () => {
 
                 <div class="inputs_group_wrapper_3">
                     <div class="inputs_group">
-                        <div class="flex items-center gap-3">
-                            <Checkbox v-model="form.is_active" id="is_active" />
-                            <Label for="is_active">Is Active?</Label>
-                        </div>
-                        <div class="text-sm text-red-600" v-if="form.errors.is_active">{{ form.errors.is_active }}</div>
-                    </div>
-
-                    <div class="inputs_group">
                         <Label for="price">Buying Price</Label>
                         <Input 
                             v-model="form.buying_price"
@@ -94,32 +86,7 @@ const handleSubmit = () => {
                     </div>
                 </div>
 
-                <div class="inputs_group_wrapper">
-                    <div class="inputs_group">
-                        <Label for="categories">Categories (Optional)</Label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                            <div
-                                v-for="category in categories"
-                                :key="category.id"
-                                class="flex items-center space-x-2"
-                            >
-                                <input
-                                    type="checkbox"
-                                    :id="`category-${category.id}`"
-                                    :value="category.id"
-                                    v-model="form.categories"
-                                    class="rounded border-gray-300"
-                                />
-                                <Label :for="`category-${category.id}`" class="text-sm">
-                                    {{ category.name }}
-                                </Label>
-                            </div>
-                        </div>
-                        <div class="text-sm text-red-600" v-if="form.errors.categories">
-                            {{ form.errors.categories }}
-                        </div>
-                    </div>
-
+                <div class="inputs_group_wrapper_3">
                     <div class="inputs_group">
                         <Label for="description">Unit of Measurement</Label>
                         <Input v-model="form.unit_of_measurement" type="text" placeholder="Unit of Measurement (eg. kg, g, l, pcs)" />
@@ -142,12 +109,43 @@ const handleSubmit = () => {
                     </div>
                 </div>
 
-                <div class="flex gap-2">
+                <div class="inputs_group">
+                    <div class="flex items-center gap-3">
+                        <Checkbox v-model="form.is_active" id="is_active" />
+                        <Label for="is_active">Is Active?</Label>
+                    </div>
+                    <div class="text-sm text-red-600" v-if="form.errors.is_active">{{ form.errors.is_active }}</div>
+                </div>
+
+                <div class="inputs_group">
+                    <Label for="categories">Categories (Optional)</Label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                        <div
+                            v-for="category in categories"
+                            :key="category.id"
+                            class="flex items-center space-x-2"
+                        >
+                            <input
+                                type="checkbox"
+                                :id="`category-${category.id}`"
+                                :value="category.id"
+                                v-model="form.categories"
+                                class="rounded border-gray-300"
+                            />
+                            <Label :for="`category-${category.id}`" class="text-sm">
+                                {{ category.name }}
+                            </Label>
+                        </div>
+                    </div>
+                    <div class="text-sm text-red-600" v-if="form.errors.categories">
+                        {{ form.errors.categories }}
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-4">
                     <Button type="submit" :disabled="form.processing" :loading="form.processing">{{ form.processing ? 'Creating Product...' : 'Create Product' }}</Button>
 
-                    <Link :href="products.index().url">
-                        <Button>Cancel</Button>
-                    </Link>
+                    <Button type="button" variant="outline" @click="$inertia.visit(products.index().url)">Cancel</Button>
                 </div>
             </form>
         </div>

@@ -60,3 +60,43 @@ form {
 button {
     cursor: pointer;
 }
+
+.AdminDashboard {
+    .salutation {
+        @apply font-bold mb-4;
+    }
+
+    h2 {
+        @apply font-semibold mb-4 text-gray-600;
+    }
+
+    .stat {
+        @apply bg-gray-50 px-[16px] py-[8px] rounded-[8px];
+
+        .count {
+            @apply text-xl font-semibold;
+        }
+
+        .title {
+            @apply tracking-normal text-gray-500 font-semibold;
+        }
+
+        .extras {
+            @apply text-sm font-light text-gray-500;
+        }
+    }
+
+    .stats {
+        .stats_wrapper {
+            @apply grid md:grid-cols-6 gap-4;
+        }
+    }
+
+    .financial_stats {
+        @apply mt-8;
+
+        .financial_stats_wrapper {
+            @apply grid md:grid-cols-4 gap-4;
+        }
+    }
+}

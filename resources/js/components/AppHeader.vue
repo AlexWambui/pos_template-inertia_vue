@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { LayoutGrid, Menu, Users, Barcode, GitBranch, BadgeDollarSign } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -63,19 +63,24 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Users',
+        title: 'Sales',
         href: users.index().url,
-        icon: LayoutGrid,
+        icon: BadgeDollarSign,
     },
     {
         title: 'Products',
         href: products.index().url,
-        icon: LayoutGrid,
+        icon: Barcode,
+    },
+    {
+        title: 'Users',
+        href: users.index().url,
+        icon: Users,
     },
     {
         title: 'Branches',
         href: branches.index().url,
-        icon: LayoutGrid,
+        icon: GitBranch,
     },
 ];
 

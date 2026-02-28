@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import AdminDashboard from '@/pages/dashboards/Admin.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,6 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
+    v-if
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">

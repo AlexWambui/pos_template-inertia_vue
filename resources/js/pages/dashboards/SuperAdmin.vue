@@ -18,6 +18,10 @@ defineProps<{
         email: string;
         role: number;
     };
+
+    stats: {
+        total_branches: number;
+    }
 }>();
 
 const { formatNumber, formatDecimal } = useFormatters();
@@ -52,7 +56,7 @@ const { formatNumber, formatDecimal } = useFormatters();
                 </div>
 
                 <div class="stat">
-                    <p class="count">{{ formatNumber(1000) }}</p>
+                    <p class="count">{{ formatNumber(stats.total_branches) }}</p>
                     <p class="title">Branches</p>
                     <p class="extras"></p>
                 </div>

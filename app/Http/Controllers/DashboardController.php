@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\UserRoles;
@@ -24,6 +25,8 @@ class DashboardController extends Controller
     private function getSuperAdminStats()
     {
         return [
+            'total_branches' => Branch::count(),
+
             // 'total_staff' => User::staff()->count(),
             // 'total_customers' => User::customers()->count(),
             'total_staff' => 1000,

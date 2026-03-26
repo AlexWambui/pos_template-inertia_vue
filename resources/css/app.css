@@ -1,3 +1,9 @@
 @import "./default";
 
+.AppContainer {
+    @apply py-2 px-4 md:max-w-7xl;
+}
+
+@import "./components/forms";
+
 @import "./pages/Dashboard";

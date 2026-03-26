@@ -26,7 +26,7 @@ const { formatNumber, formatDecimal } = useFormatters();
 <template>
     <Head title="Admin Dashboard" />
 
-    <div class="Dashboard AdminDashboard">
+    <div class="AppContainer Dashboard AdminDashboard">
         <p class="salutation">Hi, {{ user.name }}</p>
 
         <div class="stats">

@@ -1,6 +1,6 @@
 .Dashboard {
     .salutation {
-        @apply mt-4 mb-4
+        @apply mb-4
     }
 
     .stats {

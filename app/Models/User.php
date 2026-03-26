@@ -37,6 +37,10 @@ class User extends Authenticatable
         ];
     }
 
+    protected $appends = [
+        'role_label',
+    ];
+
     public function hasRole(string $role_name): bool
     {
         // Convert string role name to enum value
@@ -92,5 +96,15 @@ class User extends Authenticatable
             UserRoles::ADMIN,
             UserRoles::CASHIER
         ]);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 1;
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return $this->role->label();
     }
 }

@@ -77,10 +77,10 @@ watch(search, () => {
         />
 
         <div class="branches_table">
-            <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+            <div class="bg-white dark:bg-gray-900 rounded-lg border shadow-sm overflow-hidden">
                 <Table>
                     <TableHeader>
-                        <TableRow class="bg-gray-50">
+                        <TableRow class="bg-gray-50 dark:bg-gray-900">
                             <TableHead class="w-[50px]">#</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Code</TableHead>

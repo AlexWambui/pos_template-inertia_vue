@@ -14,7 +14,7 @@
             @apply grid lg:grid-cols-6 gap-4;
 
             .stat {
-                @apply bg-gray-100 rounded-lg p-4;
+                @apply bg-blue-50 rounded-lg p-4;
 
                 .count {
                     @apply font-semibold text-xl;
@@ -26,6 +26,10 @@
 
                 .extras {
                     @apply text-sm text-gray-600;
+                }
+
+                .extras.inactive {
+                    @apply text-red-600;
                 }
             }
         }

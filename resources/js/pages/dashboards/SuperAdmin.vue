@@ -59,7 +59,7 @@ const { formatNumber, formatDecimal } = useFormatters();
                 <div class="stat">
                     <p class="count">{{ formatNumber(stats.total_branches) }}</p>
                     <p class="title">Branches</p>
-                    <p class="extras">{{ formatNumber(stats.total_inactive_branches) }} Inactive</p>
+                    <p class="extras" :class="[ stats.total_inactive_branches > 0 ? 'inactive' : '' ]">{{ formatNumber(stats.total_inactive_branches) }} Inactive</p>
                 </div>
             </div>
         </div>

@@ -21,6 +21,7 @@ defineProps<{
 
     stats: {
         total_branches: number;
+        total_inactive_branches: number;
     }
 }>();
 
@@ -58,7 +59,7 @@ const { formatNumber, formatDecimal } = useFormatters();
                 <div class="stat">
                     <p class="count">{{ formatNumber(stats.total_branches) }}</p>
                     <p class="title">Branches</p>
-                    <p class="extras"></p>
+                    <p class="extras">{{ formatNumber(stats.total_inactive_branches) }} Inactive</p>
                 </div>
             </div>
         </div>

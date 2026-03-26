@@ -26,6 +26,7 @@ class DashboardController extends Controller
     {
         return [
             'total_branches' => Branch::count(),
+            'total_inactive_branches' => Branch::inactive()->count(),
 
             // 'total_staff' => User::staff()->count(),
             // 'total_customers' => User::customers()->count(),

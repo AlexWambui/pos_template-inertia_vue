@@ -50,22 +50,54 @@ const props = withDefaults(defineProps<Props>(), {
 const page = usePage();
 const auth = computed(() => page.props.auth);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+const user = computed(() => page.props.auth.user);
+const isAdmin = computed(() => user.value?.role_label === 'Admin' || user.value?.role_label === 'Super Admin');
+const isSuperAdmin = computed(() => user.value?.role_label === 'Super Admin');
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Branches',
-        href: branches.index().url,
-        icon: GitBranch,
-    },
-];
+const mainNavItems = computed(() => {
+    const items = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        // {
+        //     title: 'Sales',
+        //     href: users.index().url,
+        //     icon: BadgeDollarSign,
+        // },
+    ];
+
+    if (isAdmin.value) {
+        // items.push(
+        //     {
+        //         title: 'Products',
+        //         href: products.index().url,
+        //         icon: Barcode,
+        //     },
+        //     {
+        //         title: 'Users',
+        //         href: users.index().url,
+        //         icon: Users,
+        //     },
+        // );
+    }
+
+    if (isSuperAdmin.value) {
+        items.push(
+            {
+                title: 'Branches',
+                href: branches.index(),
+                icon: GitBranch,
+            },
+        )
+    }
+    
+    return items;
+});
 
 const rightNavItems: NavItem[] = [
     // {

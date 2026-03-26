@@ -1,0 +1,33 @@
+.Dashboard {
+    .salutation {
+        @apply mt-4 mb-4
+    }
+
+    .stats {
+        @apply mb-4;
+
+        h2 {
+            @apply font-semibold text-lg;
+        }
+
+        .stats_wrapper {
+            @apply grid lg:grid-cols-6 gap-4;
+
+            .stat {
+                @apply bg-gray-100 rounded-lg p-4;
+
+                .count {
+                    @apply font-semibold text-xl;
+                }
+
+                .title {
+                    @apply text-lg;
+                }
+
+                .extras {
+                    @apply text-sm text-gray-600;
+                }
+            }
+        }
+    }
+}

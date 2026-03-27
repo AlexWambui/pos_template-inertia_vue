@@ -18,12 +18,19 @@ use App\Models\Users\StaffProfile;
 use App\Models\Users\CustomerProfile;
 use App\Models\Users\SupplierProfile;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable, HasUuid, HasCreatorAuditTrail;
+
+    protected $guarded = [];
+
+    protected $hidden = [
+        'password', 
+        'two_factor_secret', 
+        'two_factor_recovery_codes', 
+        'remember_token'
+    ];
 
     /**
      * Get the attributes that should be cast.

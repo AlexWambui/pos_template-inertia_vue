@@ -48,4 +48,15 @@ enum UserRoles: int
             self::CUSTOMER->value => self::CUSTOMER->label(),
         ];
     }
+
+    // In UserRoles enum
+    public static function tryFromLabel(string $label): ?self
+    {
+        foreach (self::cases() as $role) {
+            if (strtolower($role->label()) === strtolower(trim($label))) {
+                return $role;
+            }
+        }
+        return null;
+    }
 }

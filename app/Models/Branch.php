@@ -4,16 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Concerns\HasUuid;
+use App\Concerns\Users\HasCreatorAuditTrail;
+use App\Models\Users\StaffProfile;
 
 class Branch extends Model
 {
-    use HasUuid;
+    use HasUuid, HasCreatorAuditTrail;
 
     protected $guarded = [];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function staffProfiles()
+    {
+        return $this->hasMany(StaffProfile::class);
+    }
 
     public function scopeActive($query)
     {

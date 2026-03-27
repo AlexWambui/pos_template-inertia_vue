@@ -13,13 +13,17 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Enums\UserRoles;
 use App\Enums\UserStatuses;
 use App\Concerns\HasUuid;
+use App\Concerns\Users\HasCreatorAuditTrail;
+use App\Models\Users\StaffProfile;
+use App\Models\Users\CustomerProfile;
+use App\Models\Users\SupplierProfile;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasUuid;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasUuid, HasCreatorAuditTrail;
 
     /**
      * Get the attributes that should be cast.
@@ -34,12 +38,55 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
             'role' => UserRoles::class,
             'status' => UserStatuses::class,
+            'last_login_at' => 'datetime',
         ];
     }
 
     protected $appends = [
         'role_label',
+        'is_active',
+        'branch'
     ];
+
+    protected $with = [
+        'staffProfile',
+        'customerProfile',
+        'supplierProfile',
+    ];
+
+    public function staffProfile()
+    {
+        return $this->hasOne(StaffProfile::class);
+    }
+
+    public function customerProfile()
+    {
+        return $this->hasOne(CustomerProfile::class);
+    }
+
+    public function supplierProfile()
+    {
+        return $this->hasOne(SupplierProfile::class);
+    }
+
+    public function branch()
+    {
+        // Get the branch associated with the user based on their role
+        // Check if user has a role that should have a branch
+        if ($this->role === UserRoles::CASHIER && $this->relationLoaded('staffProfile')) {
+            return $this->staffProfile->belongsTo(Branch::class, 'branch_id');
+        }
+        
+        if ($this->role === UserRoles::CUSTOMER && $this->relationLoaded('customerProfile')) {
+            return $this->customerProfile->belongsTo(Branch::class, 'branch_id');
+        }
+        
+        if ($this->role === UserRoles::SUPPLIER && $this->relationLoaded('supplierProfile')) {
+            return $this->supplierProfile->belongsTo(Branch::class, 'branch_id');
+        }
+        
+        return null;
+    }
 
     public function hasRole(string $role_name): bool
     {
@@ -100,11 +147,99 @@ class User extends Authenticatable
 
     public function isActive(): bool
     {
-        return $this->status === 1;
+        return $this->status === UserStatuses::ACTIVE;
+    }
+
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->isActive();
     }
 
     public function getRoleLabelAttribute(): string
     {
         return $this->role->label();
+    }
+
+    public function getBranchAttribute()
+    {
+        $relation = $this->branch();
+        return $relation ? $relation->get()->first() : null;
+    }
+
+    // Scope for specific roles
+    public function scopeWhereRole($query, UserRoles $role)
+    {
+        return $query->where('role', $role->value);
+    }
+    
+    public function scopeStaff($query)
+    {
+        return $query->whereIn('role', [
+            UserRoles::SUPER_ADMIN->value,
+            UserRoles::ADMIN->value,
+            UserRoles::CASHIER->value
+        ]);
+    }
+    
+    public function scopeCustomers($query)
+    {
+        return $query->whereRole(UserRoles::CUSTOMER);
+    }
+    
+    public function scopeSuppliers($query)
+    {
+        return $query->whereRole(UserRoles::SUPPLIER);
+    }
+
+    public function scopeOrderByRolePriority($query)
+    {
+        return $query->orderByRaw(
+            "CASE
+                WHEN role = ? THEN 1
+                WHEN role = ? THEN 2
+                WHEN role = ? THEN 3
+                WHEN role = ? THEN 4
+                WHEN role = ? THEN 5
+                ELSE 6
+            END ASC",
+            [
+                UserRoles::SUPER_ADMIN->value,
+                UserRoles::ADMIN->value,
+                UserRoles::CASHIER->value,
+                UserRoles::SUPPLIER->value,
+                UserRoles::CUSTOMER->value,
+            ]
+        )->orderBy('name');
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) return $query;
+        
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeFilterByRole($query, $role)
+    {
+        // If role is empty string or null, don't filter
+        if ($role === null || $role === '' || $role === 'null') {
+            return $query;
+        }
+
+        // Handle numeric values
+        if (is_numeric($role)) {
+            return $query->where('role', (int) $role);
+        }
+        
+        // Handle string labels (for direct label filtering)
+        $roleEnum = UserRoles::tryFromLabel($role);
+        if ($roleEnum) {
+            return $query->where('role', $roleEnum->value);
+        }
+        
+        return $query;
     }
 }

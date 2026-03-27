@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search, GitBranch } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Menu, Search, GitBranch, Users } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -37,6 +37,7 @@ import { getInitials } from '@/composables/useInitials';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import branches from '@/routes/branches';
+import users from '@/routes/users';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -92,6 +93,11 @@ const mainNavItems = computed(() => {
                 title: 'Branches',
                 href: branches.index(),
                 icon: GitBranch,
+            },
+            {
+                title: 'Users',
+                href: users.index(),
+                icon: Users,
             },
         )
     }

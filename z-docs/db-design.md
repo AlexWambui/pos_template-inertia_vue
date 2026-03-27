@@ -28,19 +28,16 @@ Schema::create('branches', function (Blueprint $table) {
     $table->string('address')->nullable();
     $table->string('city')->nullable();
     $table->boolean('is_active')->default(true);
-
     $table->timestamps();
 });
 
 Schema::create('staff_profiles', function (Blueprint $table) {
     $table->id();
     $table->string('staff_code')->unique();
-    $table->string('position')->index(); // Cashier, Manager, Team Leader
+    $table->string('position')->index();
     $table->timestamp('hired_at')->nullable();
-
     $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
     $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
-
     $table->timestamps();
 });
 
@@ -49,9 +46,8 @@ Schema::create('customer_profiles', function (Blueprint $table) {
     $table->string('customer_code')->nullable()->unique();
     $table->unsignedInteger('loyalty_points')->default(0);
     $table->decimal('credit_limit', 12, 2)->nullable();
-
     $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
-
+    $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
     $table->timestamps();
 });
 
@@ -61,9 +57,8 @@ Schema::create('supplier_profiles', function (Blueprint $table) {
     $table->string('payment_terms')->index(); // net_30, net_60, prepaid
     $table->string('tax_id')->nullable();
     $table->boolean('is_active')->default(true);
-
     $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
-
+    $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
     $table->timestamps();
 });
 

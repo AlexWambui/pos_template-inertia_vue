@@ -12,8 +12,8 @@ use App\Http\Resources\UserResource;
 use App\Http\Requests\Users\UserRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Exception;
-
 
 class UserController extends Controller
 {
@@ -135,6 +135,179 @@ class UserController extends Controller
                 ->withInput()
                 ->with([
                     'message' => 'Failed to create user: ' . $e->getMessage(),
+                    'type' => 'error'
+                ]);
+        }
+    }
+
+    public function edit(User $user)
+    {
+        $user->load(['staffProfile', 'customerProfile', 'supplierProfile']);
+
+        $branches = Branch::select('id', 'name')->get();
+
+        return Inertia::render('users/Edit', [
+            'user' => new UserResource($user),
+            'branches' => $branches,
+        ]);
+    }
+
+    public function update(UserRequest $request, User $user)
+    {
+        try {
+            DB::beginTransaction();
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+                'status' => $request->status,
+            ]);
+
+            if ($request->password) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                ]);
+            }
+
+            $role = UserRoles::from($request->role);
+
+            switch ($role) {
+                case UserRoles::CASHIER:
+                    if ($user->staffProfile) {
+                        // Update existing staff profile
+                        $user->staffProfile->update([
+                            'position' => $request->position,
+                            'hired_at' => $request->hired_at,
+                            'branch_id' => $request->branch_id,
+                        ]);
+                    } else {
+                        // Create new staff profile (if role changed)
+                        $user->staffProfile()->create([
+                            'position' => $request->position,
+                            'hired_at' => $request->hired_at,
+                            'branch_id' => $request->branch_id,
+                        ]);
+                    }
+                    
+                    // Clean up other profiles if they exist
+                    if ($user->customerProfile) {
+                        $user->customerProfile->delete();
+                    }
+                    if ($user->supplierProfile) {
+                        $user->supplierProfile->delete();
+                    }
+                    break;
+
+                case UserRoles::SUPPLIER:
+                    if ($user->supplierProfile) {
+                        $user->supplierProfile->update([
+                            'company_name' => $request->company_name,
+                            'payment_terms' => $request->payment_terms,
+                            'tax_id' => $request->tax_id,
+                            'is_active' => $request->is_active ?? true,
+                            'branch_id' => $request->branch_id,
+                        ]);
+                    } else {
+                        $user->supplierProfile()->create([
+                            'company_name' => $request->company_name,
+                            'payment_terms' => $request->payment_terms,
+                            'tax_id' => $request->tax_id,
+                            'is_active' => $request->is_active ?? true,
+                            'branch_id' => $request->branch_id,
+                        ]);
+                    }
+                    
+                    // Clean up other profiles
+                    if ($user->staffProfile) {
+                        $user->staffProfile->delete();
+                    }
+                    if ($user->customerProfile) {
+                        $user->customerProfile->delete();
+                    }
+                    break;
+                
+                case UserRoles::CUSTOMER:
+                    if ($user->customerProfile) {
+                        $user->customerProfile->update([
+                            'loyalty_points' => $request->loyalty_points ?? 0,
+                            'credit_limit' => $request->credit_limit,
+                            'branch_id' => $request->branch_id,
+                        ]);
+                    } else {
+                        $user->customerProfile()->create([
+                            'loyalty_points' => $request->loyalty_points ?? 0,
+                            'credit_limit' => $request->credit_limit,
+                            'branch_id' => $request->branch_id,
+                        ]);
+                    }
+                    
+                    // Clean up other profiles
+                    if ($user->staffProfile) {
+                        $user->staffProfile->delete();
+                    }
+                    if ($user->supplierProfile) {
+                        $user->supplierProfile->delete();
+                    }
+                    break;
+
+                case UserRoles::SUPER_ADMIN:
+                case UserRoles::ADMIN:
+                    // Delete any existing profiles for admin roles
+                    if ($user->staffProfile) {
+                        $user->staffProfile->delete();
+                    }
+                    if ($user->customerProfile) {
+                        $user->customerProfile->delete();
+                    }
+                    if ($user->supplierProfile) {
+                        $user->supplierProfile->delete();
+                    }
+                    break;
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('users.index')
+                ->with([
+                    'message' => 'User updated successfully',
+                    'type' => 'success'
+                ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->with([
+                    'message' => 'Failed to update user: ' . $e->getMessage(),
+                    'type' => 'error'
+                ]);
+        }
+    }
+
+    public function destroy(User $user)
+    {
+        try {
+            if (Auth::id() === $user->id) {
+                return back()->with([
+                    'message' => 'You cannot delete your own account.',
+                    'type' => 'error'
+                ]);
+            }
+
+            $user->delete();
+
+            return redirect()
+                ->route('users.index')
+                ->with([
+                    'message' => 'User deleted successfully',
+                    'type' => 'success'
+                ]);
+        } catch (Exception $e) {
+            return back()
+                ->with([
+                    'message' => 'Failed to delete user: ' . $e->getMessage(),
                     'type' => 'error'
                 ]);
         }

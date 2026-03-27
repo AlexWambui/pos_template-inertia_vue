@@ -51,6 +51,7 @@ class User extends Authenticatable
 
     protected $appends = [
         'role_label',
+        'status_label',
         'is_active',
         'branch'
     ];
@@ -165,6 +166,11 @@ class User extends Authenticatable
     public function getRoleLabelAttribute(): string
     {
         return $this->role->label();
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->status->label();
     }
 
     public function getBranchAttribute()

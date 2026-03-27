@@ -5,7 +5,8 @@ namespace App\Http\Requests\Users;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\UserRoles;
-use Illuminate\Validation\Rules\Enum;
+use App\Enums\UserStatuses;
+use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
@@ -24,11 +25,14 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $user = $this->route('user');
+
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', new Enum(UserRoles::class)],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user?->id)],
+            // 'role' => ['required', new Enum(UserRoles::class)],
+            'role' => ['required', 'integer', 'in:' . implode(',', array_column(UserRoles::cases(), 'value'))],
+            'status' => ['required', 'integer', 'in:' . implode(',', array_column(UserStatuses::cases(), 'value'))],
 
             // Common fields (for multiple roles)
             'branch_id' => ['nullable', 'exists:branches,id'],
@@ -47,6 +51,12 @@ class UserRequest extends FormRequest
             'loyalty_points' => ['nullable', 'integer', 'min:0'],
             'credit_limit' => ['nullable', 'numeric', 'min:0'],
         ];
+
+        if (!$user || $this->filled('password')) {
+            $rules['password'] = ['required', 'string', 'min:8', 'confirmed'];
+        }
+
+        return $rules;
     }
 
     /**

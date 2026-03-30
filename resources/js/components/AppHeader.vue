@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search, GitBranch, Users } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Menu, Search, GitBranch, Users, Barcode } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -52,7 +52,7 @@ const page = usePage();
 const auth = computed(() => page.props.auth);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 const user = computed(() => page.props.auth.user);
-const isAdmin = computed(() => user.value?.role_label === 'Admin' || user.value?.role_label === 'Super Admin');
+const isAdmin = computed(() => user.value?.role_label === 'Admin');
 const isSuperAdmin = computed(() => user.value?.role_label === 'Super Admin');
 
 const activeItemStyles =
@@ -73,18 +73,13 @@ const mainNavItems = computed(() => {
     ];
 
     if (isAdmin.value) {
-        // items.push(
-        //     {
-        //         title: 'Products',
-        //         href: products.index().url,
-        //         icon: Barcode,
-        //     },
-        //     {
-        //         title: 'Users',
-        //         href: users.index().url,
-        //         icon: Users,
-        //     },
-        // );
+        items.push(
+            {
+                title: 'Products',
+                href: users.index(),
+                icon: Barcode,
+            },
+        );
     }
 
     if (isSuperAdmin.value) {

@@ -17,7 +17,14 @@ class DashboardController extends Controller
         if ($user->role === UserRoles::SUPER_ADMIN) {
             return inertia('dashboards/SuperAdmin', [
                 'user' => $user,
-                'stats' => $this->getSuperAdminStats(),
+                'stats' => $this->getSuperAdminStats()
+            ]);
+        }
+
+        if ($user->role === UserRoles::ADMIN) {
+            return inertia('dashboards/Admin', [
+                'user' => $user,
+                'stats' => $this->getAdminStats()
             ]);
         }
     }
@@ -47,6 +54,20 @@ class DashboardController extends Controller
             'gross_profit' => 500000,
 
             // 'todaySales' => Transaction::today()->sum('amount'),
+        ];
+    }
+
+    public function getAdminStats()
+    {
+        return [
+            'total_products' => 1000,
+            'total_product_categories' => 1000,
+            
+            'total_sales' => 4578,
+            'gross_sales' => 1000000,
+            'net_sales' => 850000,
+            'cost_of_sales' => 150000,
+            'gross_profit' => 500000,
         ];
     }
 }

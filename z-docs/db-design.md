@@ -78,55 +78,43 @@ Schema::create('shifts', function (Blueprint $table) {
 
 Schema::create('product_categories', function (Blueprint $table) {
     $table->id();
-
-    $table->string('name');
+    $table->uuid('uuid')->unique();
+    $table->string('name')->unique();
     $table->string('slug')->unique();
-
-    // For nested categories (e.g. Drinks → Soft Drinks)
-    $table->foreignId('parent_id')->nullable()->constrained('product_categories')->nullOnDelete();
-
     $table->boolean('is_active')->default(true);
     $table->integer('sort_order')->default(0);
-
     $table->timestamps();
+
+    $table->index('name');
+    $table->index('is_active');
+    $table->index(['is_active', 'sort_order']); // For active categories sorted by order
 });
 
 Schema::create('products', function (Blueprint $table) {
     $table->id();
-
-    $table->string('name');
+    $table->uuid('uuid')->unique();
+    $table->string('name')->unique();
     $table->string('sku')->unique()->nullable();
     $table->decimal('buying_price', 12, 2)->nullable(); // For profit calculation
     $table->decimal('selling_price', 12, 2);
     $table->string('barcode')->unique()->nullable();
     $table->boolean('is_active')->default(true);
     $table->integer('current_stock')->default(0);
-    $table->string('unit_of_measurement')->nullable(); // For receipt display
-
-    $table->timestamps();
-});
-
-Schema::create('category_product', function (Blueprint $table) {
-    $table->id();
-
-    $table->foreignId('product_category_id')->constrained()->cascadeOnDelete();
-
-    $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-
-    $table->unique(['product_category_id', 'product_id']);
-
-    $table->timestamps();
-});
-
-Schema::create('product_images', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->boolean('is_primary')->default(false);
+    $table->decimal('weight_value', 10, 2)->nullable();
+    $table->string('weight_unit')->nullable();
     $table->integer('sort_order')->default(0);
-
-    $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-
+    $table->string('image')->nullable();
+    $table->foreignId('product_category_id')->nullable()->constrained('product_categories')->nullOnDelete();
     $table->timestamps();
+
+    $table->index('name');
+    $table->index('is_active');
+    $table->index('current_stock');
+    $table->index('sort_order');
+    $table->index('product_category_id');
+    $table->index(['is_active', 'sort_order']); // For active products sorted by order
+    $table->index(['product_category_id', 'is_active']); // For filtering by category and active status
+    $table->index(['is_active', 'current_stock']); // For low stock queries on active products
 });
 
 Schema::create('inventory_movements', function (Blueprint $table) {

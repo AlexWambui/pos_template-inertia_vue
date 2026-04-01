@@ -12,6 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user->role === UserRoles::SUPER_ADMIN) {
@@ -26,6 +27,16 @@ class DashboardController extends Controller
                 'user' => $user,
                 'stats' => $this->getAdminStats()
             ]);
+        }
+
+        if ($user->role === UserRoles::CASHIER) {
+            if (!$user->hasOpenShift()) {
+                return inertia('dashboards/CashierNoShift', [
+                    'user' => $user,
+                    'lastShift' => $user->shifts()->latest()->first(),
+                    'status' => $this->getCashierStats()
+                ]);
+            }
         }
     }
 
@@ -68,6 +79,14 @@ class DashboardController extends Controller
             'net_sales' => 850000,
             'cost_of_sales' => 150000,
             'gross_profit' => 500000,
+        ];
+    }
+
+    public function getCashierStats()
+    {
+        return [
+            'total_sales_today' => 0,
+            'total_transactions' => 0
         ];
     }
 }

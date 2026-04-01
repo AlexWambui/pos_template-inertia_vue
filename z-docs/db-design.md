@@ -68,11 +68,8 @@ Schema::create('shifts', function (Blueprint $table) {
     $table->timestamp("closed_at")->nullable();
     $table->decimal("opening_cash", 12, 2)->nullable();
     $table->decimal("closing_cash", 12, 2)->nullable();
-
     $table->foreignId("user_id")->constrained()->cascadeOnDelete();
-
     $table->timestamps();
-
     $table->index(['user_id', 'opened_at']);
 });
 
@@ -119,32 +116,25 @@ Schema::create('products', function (Blueprint $table) {
 
 Schema::create('inventory_movements', function (Blueprint $table) {
     $table->id();
-
     $table->unsignedTinyInteger('type'); // sale, restock, adjustment, return, waste
     $table->integer('quantity_change'); // Positive for in, negative for out
     $table->text('reason')->nullable(); // "stock take", "damaged"
     $table->string('reference_type')->nullable(); // "App\Models\|Sale"
-
     $table->foreignId('reference_id')->nullable(); // Links to purchese_order_id, sale_id
     $table->foreignId('product_id')->constrained()->cascadeOnDelete();
     $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
     $table->foreignId('shift_id')->nullable()->constrained()->nullOnDelete();
-
     $table->timestamp('created_at');
-
     $table->index(['product_id', 'reference_type', 'reference_id', 'created_at']);
 });
 
 Schema::create('sales', function (Blueprint $table) {
     $table->id();
-
     $table->string('sale_number')->unique();
     $table->unsignedTinyInteger('status')->default(1);
     $table->decimal('total_amount', 12, 2);
-
     $table->foreignId('shift_id')->constrained()->restrictOnDelete();
     $table->foreignId('user_id')->constrained()->restrictOnDelete();
-    
     $table->timestamp('completed_at');
     $table->timestamps();
 
@@ -153,45 +143,32 @@ Schema::create('sales', function (Blueprint $table) {
 
 Schema::create('sale_items', function (Blueprint $table) {
     $table->id();
-
-    $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
-
-    $table->foreignId('product_id')->constrained()->restrictOnDelete();
-
     $table->string('product_name');
     $table->string('sku');
-
     $table->decimal('unit_price', 12, 2);
     $table->integer('quantity');
     $table->decimal('line_total', 12, 2);
-
+    $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('product_id')->constrained()->restrictOnDelete();
     $table->timestamps();
 });
 
 Schema::create('payments', function (Blueprint $table) {
     $table->id();
-
     $table->string('method'); // cash, card, mpesa
     $table->decimal('amount', 12, 2);
-    
     $table->string('reference')->nullable();
-
     $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
-
     $table->timestamps();
 });
 
 Schema::create('cash_movements', function (Blueprint $table) {
     $table->id();
-    
     $table->string('type'); // opening, sale, payout, topup, closing
     $table->decimal('amount', 12, 2);
-    
     $table->string('note')->nullable();
-    
     $table->foreignId('shift_id')->constrained()->cascadeOnDelete();
     $table->foreignId('user_id')->constrained()->restrictOnDelete();
-
     $table->timestamps();
 });
 ```

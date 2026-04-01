@@ -17,6 +17,7 @@ use App\Concerns\Users\HasCreatorAuditTrail;
 use App\Models\Users\StaffProfile;
 use App\Models\Users\CustomerProfile;
 use App\Models\Users\SupplierProfile;
+use App\Models\Users\Shift;
 
 class User extends Authenticatable
 {
@@ -94,6 +95,11 @@ class User extends Authenticatable
         }
         
         return null;
+    }
+
+    public function shifts()
+    {
+        return $this->hasMany(Shift::class);
     }
 
     public function hasRole(string $role_name): bool
@@ -254,5 +260,20 @@ class User extends Authenticatable
         }
         
         return $query;
+    }
+
+    public function openShift()
+    {
+        return $this->hasOne(Shift::class)->whereNull('closed_at')->latest();
+    }
+
+    public function hasOpenShift(): bool
+    {
+        return $this->openShift()->exists();
+    }
+
+    public function currentShift()
+    {
+        return $this->openShift;
     }
 }

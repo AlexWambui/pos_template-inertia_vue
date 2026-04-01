@@ -84,5 +84,11 @@ class UserRequest extends FormRequest
                 'role' => (int) $this->role,
             ]);
         }
+
+        if ($this->isMethod('POST')) {
+            $this->merge([
+                'status' => $this->input('status', 1),
+            ]);
+        }
     }
 }

@@ -38,6 +38,7 @@ import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import branches from '@/routes/branches';
 import users from '@/routes/users';
+import products from '@/routes/products';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -76,7 +77,7 @@ const mainNavItems = computed(() => {
         items.push(
             {
                 title: 'Products',
-                href: users.index(),
+                href: products.index(),
                 icon: Barcode,
             },
         );

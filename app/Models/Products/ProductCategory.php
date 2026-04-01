@@ -4,12 +4,17 @@ namespace App\Models\Products;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Concerns\HasUuid;
+use App\Concerns\HasSlug;
 
 class ProductCategory extends Model
 {
-    use HasUuid;
+    use HasUuid, HasSlug;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     protected static function booted()
     {
@@ -22,6 +27,11 @@ class ProductCategory extends Model
 
     public function products()
     {
-        $this->hasMany(Product::class);
+        return $this->hasMany(Product::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

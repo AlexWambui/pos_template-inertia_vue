@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\Users\UserController;
+use App\Http\Controllers\Products\ProductCategoryController;
 use App\Http\Controllers\Products\ProductController;
 
 Route::get('/', function() {
@@ -20,7 +21,9 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:super_admin,admin'])->group(function () {
+    Route::resource('product-categories', ProductCategoryController::class)->except('show');
     Route::resource('products', ProductController::class)->except('show');
+    Route::put('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
 });
 
 require __DIR__.'/settings.php';

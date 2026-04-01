@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('name')->unique();
+            $table->string('slug')->unique();
             $table->string('sku')->unique()->nullable();
             $table->decimal('buying_price', 12, 2)->nullable(); // For profit calculation
             $table->decimal('selling_price', 12, 2);
             $table->string('barcode')->unique()->nullable();
             $table->boolean('is_active')->default(true);
-            $table->integer('current_stock')->default(0);
+            $table->integer('current_stock')->nullable()->default(0);
             $table->decimal('weight_value', 10, 2)->nullable();
             $table->string('weight_unit')->nullable();
             $table->integer('sort_order')->default(0);

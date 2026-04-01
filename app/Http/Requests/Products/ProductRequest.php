@@ -13,7 +13,7 @@ class ProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,18 +24,30 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', Rule::unique('products')->ignore($this->product)],
+            'name' => ['required', 'string', 'max:255', Rule::unique('products')->ignore($this->product)],
             'sku' => ['nullable', 'string', 'max:50', Rule::unique('products')->ignore($this->product)],
-            'category_id' => ['nullable', 'exists:product_categories,id'],
-            'buying_price' => ['nullable', 'numeric', 'min:0'],
-            'selling_price' => ['required', 'numeric', 'min:0'],
+            'product_category_id' => ['nullable', 'exists:product_categories,id'],
+            'buying_price' => ['nullable', 'numeric', 'min:0', 'decimal:0,2'],
+            'selling_price' => ['required', 'numeric', 'min:0', 'decimal:0,2'],
             'barcode' => ['nullable', 'string', 'max:50', Rule::unique('products')->ignore($this->product)],
             'is_active' => ['boolean'],
-            'current_stock' => ['integer', 'min:0'],
-            'weight_value' => ['nullable', 'numeric', 'min:0'],
-            'weight_unit' => ['nullable', 'string', 'in:kg,g,lbs,oz'],
-            'sort_order' => ['integer'],
+            'current_stock' => ['nullable', 'integer', 'min:0'],
+            'weight_value' => ['nullable', 'numeric', 'min:0', 'decimal:0,2'],
+            'weight_unit' => ['nullable', 'string', 'in:kg,g,lbs,oz,pcs'],
+            // 'sort_order' => ['integer'],
+        ];
+    }
+
+    /**
+     * Get custom messages for validation errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'selling_price.required' => 'The selling price is required.',
+            'selling_price.min' => 'The selling price must be at least 0.',
+            'buying_price.decimal' => 'The buying price must have at most 2 decimal places.',
+            'current_stock.integer' => 'The current stock must be a whole number.',
         ];
     }
 }

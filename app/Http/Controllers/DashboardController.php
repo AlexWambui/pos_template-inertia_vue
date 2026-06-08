@@ -37,7 +37,26 @@ class DashboardController extends Controller
                     'status' => $this->getCashierStats()
                 ]);
             }
+
+            $current_shift = $user->openShift()->with('sales')->first();
+            $shift_sales = $current_shift->sales()->sum('total_amount');
+            $transaction_count = $current_shift->sales()->count();
+
+            return inertia('dashboards/Cashier', [
+                'user' => $user,
+                'stats' => $this->getCashierStats(),
+                'current_shift' => [
+                    'id' => $current_shift->id,
+                    'opened_at' => $current_shift->opened_at,
+                    'opening_cash' => $current_shift->opening_cash,
+                    'sales_total' => $shift_sales,
+                    'transactions_count' => $transaction_count,
+                    'duration_formatted' => $this->formatDuration($current_shift->opened_at)
+                ]
+            ]);
         }
+
+        return "Unknown User Role";
     }
 
     private function getSuperAdminStats()
@@ -88,5 +107,23 @@ class DashboardController extends Controller
             'total_sales_today' => 0,
             'total_transactions' => 0
         ];
+    }
+
+    private function formatDuration($opened_at)
+    {
+        $diff = now()->diff($opened_at);
+    
+        $hours = $diff->h + ($diff->days * 24);
+        $minutes = $diff->i;
+        
+        if ($hours > 0 && $minutes > 0) {
+            return "{$hours}h {$minutes}m";
+        } elseif ($hours > 0) {
+            return "{$hours}h";
+        } elseif ($minutes > 0) {
+            return "{$minutes}m";
+        }
+        
+        return "Just now";
     }
 }

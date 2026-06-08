@@ -54,7 +54,7 @@ class User extends Authenticatable
         'role_label',
         'status_label',
         'is_active',
-        'branch'
+        // 'branch'
     ];
 
     protected $with = [
@@ -80,21 +80,22 @@ class User extends Authenticatable
 
     public function branch()
     {
-        // Get the branch associated with the user based on their role
-        // Check if user has a role that should have a branch
-        if ($this->role === UserRoles::CASHIER && $this->relationLoaded('staffProfile')) {
-            return $this->staffProfile->belongsTo(Branch::class, 'branch_id');
+        // For staff users (cashier, admin, super_admin)
+        if ($this->role === UserRoles::CASHIER || $this->role === UserRoles::ADMIN || $this->role === UserRoles::SUPER_ADMIN) {
+            return $this->hasOneThrough(Branch::class, StaffProfile::class, 'user_id', 'id', 'id', 'branch_id');
         }
         
-        if ($this->role === UserRoles::CUSTOMER && $this->relationLoaded('customerProfile')) {
-            return $this->customerProfile->belongsTo(Branch::class, 'branch_id');
+        // For customers
+        if ($this->role === UserRoles::CUSTOMER) {
+            return $this->hasOneThrough(Branch::class, CustomerProfile::class, 'user_id', 'id', 'id', 'branch_id');
         }
         
-        if ($this->role === UserRoles::SUPPLIER && $this->relationLoaded('supplierProfile')) {
-            return $this->supplierProfile->belongsTo(Branch::class, 'branch_id');
+        // For suppliers
+        if ($this->role === UserRoles::SUPPLIER) {
+            return $this->hasOneThrough(Branch::class, SupplierProfile::class, 'user_id', 'id', 'id', 'branch_id');
         }
         
-        return null;
+        return $this->null();
     }
 
     public function shifts()

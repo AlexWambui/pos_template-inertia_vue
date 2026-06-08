@@ -2,7 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
-import { useFormatters } from '@/composables/userFormatters';
+import { useFormatters } from '@/composables/useFormatters';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

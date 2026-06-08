@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal("opening_cash", 12, 2)->nullable();
             $table->decimal("closing_cash", 12, 2)->nullable();
             $table->foreignId("user_id")->constrained()->cascadeOnDelete();
+            $table->text('notes')->nullable();
             $table->timestamps();
             
             $table->index(['user_id', 'opened_at']);
